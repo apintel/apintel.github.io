@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APINT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Aptos';
+            src: url('https://cdn.jsdelivr.net/gh/ipapast/Aptos@main/fonts/Aptos-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: white;
+            min-height: 100vh;
+            background-color: #050914;
+            overflow-x: hidden;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 5vw;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Aptos', sans-serif;
+            font-size: 6vw;
+            margin-bottom: 2vw;
+            color: #0ea5e9;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.02em;
+            font-weight: 700;
+        }
+
+        h1 i {
+            margin-right: 0.5em;
+            font-size: 0.9em;
+        }
+
+        p {
+            font-size: 2.5vw;
+            line-height: 1.5;
+            margin-bottom: 3vw;
+        }
+
+        strong {
+            color: #0ea5e9;
+        }
+
+        .icons {
+            font-size: 3vw;
+            margin: 3vw 0;
+            display: flex;
+            justify-content: center;
+            gap: 3vw;
+            color: #0ea5e9;
+        }
+
+        .email {
+            font-size: 4vw;
+            font-weight: 700;
+            margin: 5vw 0;
+            color: #0ea5e9;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .social {
+            font-size: 3vw;
+            display: flex;
+            justify-content: center;
+            gap: 3vw;
+            margin-top: 3vw;
+        }
+
+        .social a {
+            color: white;
+            transition: transform 0.3s;
+        }
+
+        .social a:hover {
+            color: #0ea5e9;
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+
+            h1 i {
+                font-size: 36px;
+            }
+
+            p {
+                font-size: 18px;
+            }
+
+            .icons {
+                font-size: 24px;
+            }
+
+            .email {
+                font-size: 28px;
+            }
+
+            .social {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="network-canvas"></canvas>
+    
+    <div class="content">
+        <h1><i class="fas fa-brain"></i> APINT</h1>
+        
+        <p>Somos la <strong>Asociación Profesional de Analistas de Inteligencia</strong>, una comunidad de expertos comprometidos con el desarrollo y promoción de la profesión en España.</p>
+        
+        <div class="icons">
+            <i class="fas fa-shield-alt"></i>
+            <i class="fas fa-globe-europe"></i>
+            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-laptop-code"></i>
+            <i class="fas fa-users"></i>
+        </div>
+        
+        <p>Desarrollamos nuestra actividad principalmente a través de <strong>meet-ups en persona</strong>, por ahora en Madrid. Nos encontramos al menos una vez al mes para llevar a cabo eventos en formato <strong>after-work</strong> donde compartimos conocimientos y experiencias en charlas. Contamos con acuerdos con distintas universidades y complementamos nuestra actividad con sesiones en línea, listas de correo y eventos específicos.</p>
+        
+        <div class="email">contacto@apint.net</div>
+        
+        <div class="social">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('network-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const particlesArray = [];
+            const numberOfParticles = Math.min(100, window.innerWidth / 10);
+            const connectDistance = window.innerWidth > 768 ? 200 : 100;
+            
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            
+            const mouse = {
+                x: null,
+                y: null,
+                radius: window.innerWidth > 768 ? 150 : 70
+            };
+            
+            window.addEventListener('mousemove', function(event) {
+                mouse.x = event.x;
+                mouse.y = event.y;
+            });
+            
+            window.addEventListener('mouseout', function() {
+                mouse.x = undefined;
+                mouse.y = undefined;
+            });
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = (Math.random() - 0.5) * 1;
+                    this.speedY = (Math.random() - 0.5) * 1;
+                    this.color = '#0ea5e9';
+                }
+                
+                update() {
+                    // Movement
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    
+                    // Bounce off edges
+                    if (this.x > canvas.width || this.x < 0) {
+                        this.speedX = -this.speedX;
+                    }
+                    if (this.y > canvas.height || this.y < 0) {
+                        this.speedY = -this.speedY;
+                    }
+                    
+                    // Mouse interaction
+                    if (mouse.x != undefined && mouse.y != undefined) {
+                        const dx = mouse.x - this.x;
+                        const dy = mouse.y - this.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < mouse.radius) {
+                            const angle = Math.atan2(dy, dx);
+                            const force = (mouse.radius - distance) / mouse.radius;
+                            
+                            this.speedX += Math.cos(angle) * force * 0.5;
+                            this.speedY += Math.sin(angle) * force * 0.5;
+                        }
+                    }
+                    
+                    // Apply friction
+                    this.speedX *= 0.98;
+                    this.speedY *= 0.98;
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+            
+            function init() {
+                for (let i = 0; i < numberOfParticles; i++) {
+                    particlesArray.push(new Particle());
+                }
+            }
+            
+            function connect() {
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        const dx = particlesArray[a].x - particlesArray[b].x;
+                        const dy = particlesArray[a].y - particlesArray[b].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < connectDistance) {
+                            const opacity = 1 - (distance / connectDistance);
+                            ctx.strokeStyle = `rgba(14, 165, 233, ${opacity * 0.5})`;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                    particlesArray[i].draw();
+                }
+                
+                connect();
+            }
+            
+            init();
+            animate();
+        });
+    </script>
+</body>
+</html>
